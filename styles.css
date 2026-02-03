@@ -898,48 +898,67 @@ p {
 }
 
 .kennismaking {
-  background: var(--cream);
-  background-image: linear-gradient(rgba(255, 255, 255, 0.93), rgba(255, 255, 255, 0.93)),
-    url("assets/kennismaking-bg.png");
-  background-size: 100% auto;
-  background-position: center top;
-  background-repeat: no-repeat;
+  background: #ffffff;
+  position: relative;
+}
+
+.kennismaking::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url("assets/kennismaking-bg.png") center/cover no-repeat;
+  opacity: 0.1;
+  pointer-events: none;
 }
 
 .kennismaking::after {
-  opacity: 0.05;
+  opacity: 0;
+  background: none;
 }
 
 .kennismaking-grid {
   display: grid;
-  grid-template-columns: repeat(2, 553px);
-  gap: 60px;
-  justify-content: space-between;
-  align-items: center;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-areas:
+    "intro card"
+    "list card"
+    "cta card";
+  column-gap: 60px;
+  row-gap: 30px;
+  align-items: start;
 }
 
-.kennismaking-copy {
+.kennismaking-intro {
+  grid-area: intro;
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 6px;
   align-items: flex-start;
 }
 
-.kennismaking-copy .section-title h2 {
+.kennismaking-intro h2 {
   font-size: clamp(2.5rem, 4.2vw, 3rem);
+  line-height: 1;
+  margin: 0;
 }
 
-.kennismaking-copy .section-title p {
-  font-size: 1.125rem;
-  line-height: 1.4;
-}
-
-.kennismaking-copy .section-title .green {
+.kennismaking-subtitle {
+  color: var(--green);
   font-size: 1.25rem;
   font-weight: 500;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.kennismaking-body {
+  font-size: 1.125rem;
+  line-height: 1.4;
+  font-weight: 300;
+  margin: 0;
 }
 
 .kennismaking-list {
+  grid-area: list;
   display: flex;
   flex-direction: column;
   gap: 15px;
@@ -982,16 +1001,13 @@ p {
   margin: 0;
 }
 
-.kennismaking-copy .kennismaking-cta {
-  margin-top: 30px;
-  align-self: flex-start;
-}
-
 .kennismaking-card {
+  grid-area: card;
   position: relative;
-  width: 553px;
+  width: 100%;
+  max-width: 553px;
   margin-left: 0;
-  margin-top: 20px;
+  margin-top: 0;
   justify-self: end;
 }
 
@@ -1002,7 +1018,7 @@ p {
   box-shadow: var(--shadow);
   display: grid;
   gap: 20px;
-  margin-top: 10px;
+  margin-top: 12px;
   text-align: center;
   color: #3e3d3d;
 }
@@ -1030,7 +1046,7 @@ p {
 .kennismaking-pill {
   position: absolute;
   top: 0;
-  right: 20px;
+  right: 12px;
   transform: translateY(-50%);
   background: #fffaf6;
   border-radius: 58px;
@@ -1091,6 +1107,12 @@ p {
 
 .kennismaking-pills .pill-row {
   gap: 16px;
+}
+
+.kennismaking-cta {
+  grid-area: cta;
+  justify-self: start;
+  align-self: start;
 }
 
 
@@ -1499,11 +1521,12 @@ p {
 
   .kennismaking-grid {
     grid-template-columns: 1fr;
-    gap: 40px;
-  }
-
-  .kennismaking-copy .kennismaking-cta {
-    margin-top: 30px;
+    grid-template-areas:
+      "intro"
+      "list"
+      "card"
+      "cta";
+    row-gap: 30px;
   }
 
 
@@ -2037,31 +2060,142 @@ p {
     font-size: 13.5px;
   }
 
+  .kennismaking-grid {
+    row-gap: 30px;
+  }
+
+  .kennismaking-intro {
+    gap: 11.25px;
+  }
+
+  .kennismaking-intro h2 {
+    font-size: 36px;
+    line-height: 1;
+  }
+
+  .kennismaking-subtitle {
+    font-size: 15px;
+    line-height: 1.4;
+  }
+
+  .kennismaking-body {
+    font-size: 13.5px;
+    line-height: 1.3;
+  }
+
+  .kennismaking-list {
+    gap: 11.25px;
+  }
+
+  .kennismaking-item {
+    gap: 11.25px;
+  }
+
   .kennismaking-icon {
-    width: 37.5px;
-    height: 37.5px;
-    border-radius: 7px;
+    width: 36.75px;
+    height: 36.75px;
+    border-radius: 6.81px;
     border-width: 0.75px;
   }
 
   .kennismaking-icon img {
-    width: 16px;
-    height: 16px;
+    width: 15.2px;
+    height: 15.2px;
   }
 
-  .kennismaking-item h4,
+  .kennismaking-item h4 {
+    font-size: 13.5px;
+    font-weight: 500;
+    line-height: 1.3;
+    margin-bottom: 3.75px;
+  }
+
   .kennismaking-item p {
     font-size: 13.5px;
+    line-height: 1.3;
+    margin: 0;
+  }
+
+  .kennismaking-card {
+    justify-self: center;
+    max-width: 335px;
+    margin-top: 15px;
+  }
+
+  .kennismaking-pill {
+    position: absolute;
+    right: 0;
+    top: 0;
+    transform: translateY(-50%);
+    padding: 3.9px 7.8px;
+    border-radius: 43.8px;
+    font-size: 14.1px;
+    line-height: 21.9px;
+    gap: 7.8px;
+  }
+
+  .kennismaking-pill img {
+    width: 45.4px;
+    height: 7.8px;
   }
 
   .kennismaking-card-inner {
     padding: 22.5px;
     border-radius: 15px;
+    min-height: 165px;
+    margin-top: 14.5px;
+  }
+
+  .kennismaking-header {
+    gap: 3.75px;
+    max-width: 279px;
+    margin: 0 auto;
+  }
+
+  .kennismaking-card-inner h3 {
+    font-size: 14.1px;
+    font-weight: 500;
+    line-height: 1.3;
+  }
+
+  .kennismaking-card-inner p {
+    font-size: 12.5px;
+    line-height: 1.3;
+  }
+
+  .kennismaking-header p {
+    max-width: 199px;
+    margin: 0 auto;
+  }
+
+  .kennismaking-pills {
+    gap: 7.5px;
+  }
+
+  .kennismaking-pills .pill-row {
+    gap: 11.7px;
   }
 
   .pill-ghost {
-    font-size: 14px;
-    padding: 5px 10px;
+    font-size: 14.1px;
+    padding: 3.9px 7.8px;
+    border-radius: 43.8px;
+    line-height: 21.9px;
+    gap: 7.8px;
+  }
+
+  .pill-ghost img {
+    width: 15.7px;
+    height: 15.7px;
+  }
+
+  .kennismaking-cta {
+    justify-self: center;
+    font-size: 14.25px;
+    line-height: 21px;
+    padding: 11.25px;
+    border-radius: 29.25px;
+    box-shadow: 0 1.5px 3.75px rgba(0, 0, 0, 0.3);
   }
 
   .bottleneck-card {
