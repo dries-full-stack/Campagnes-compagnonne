@@ -4,6 +4,32 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Compagnonne — Business mentoring</title>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        window.dataLayer.push(arguments);
+      }
+      gtag("consent", "default", {
+        ad_storage: "denied",
+        analytics_storage: "denied",
+        ad_user_data: "denied",
+        ad_personalization: "denied",
+      });
+    </script>
+    <!-- Google Tag Manager -->
+    <script>
+      (function (w, d, s, l, i) {
+        w[l] = w[l] || [];
+        w[l].push({ "gtm.start": new Date().getTime(), event: "gtm.js" });
+        var f = d.getElementsByTagName(s)[0],
+          j = d.createElement(s),
+          dl = l != "dataLayer" ? "&l=" + l : "";
+        j.async = true;
+        j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
+        f.parentNode.insertBefore(j, f);
+      })(window, document, "script", "dataLayer", "GTM-K7XP4X2N");
+    </script>
+    <!-- End Google Tag Manager -->
     <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="styles.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -11,6 +37,16 @@
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&family=Roboto+Slab:wght@600;700&display=swap" rel="stylesheet" />
   </head>
   <body>
+    <!-- Google Tag Manager (noscript) -->
+    <noscript>
+      <iframe
+        src="https://www.googletagmanager.com/ns.html?id=GTM-K7XP4X2N"
+        height="0"
+        width="0"
+        style="display: none; visibility: hidden"
+      ></iframe>
+    </noscript>
+    <!-- End Google Tag Manager (noscript) -->
     <div class="cookie-banner" id="cookie-banner" role="region" aria-label="Cookiebanner">
       <div class="cookie-text">
         <p>We gebruiken cookies om je ervaring te verbeteren.</p>
@@ -92,13 +128,14 @@
             <h2>Boek hier jouw gratis gesprek</h2>
             <p>Laat je gegevens achter en boek je gratis kennismakingsgesprek!</p>
           </div>
-          <form class="form-card">
+          <form class="form-card" id="lead-form" novalidate>
             <div class="form-row">
-              <input type="text" placeholder="Naam" aria-label="Naam" />
-              <input type="text" placeholder="Voornaam" aria-label="Voornaam" />
+              <input type="text" name="naam" placeholder="Naam" aria-label="Naam" autocomplete="family-name" required />
+              <input type="text" name="voornaam" placeholder="Voornaam" aria-label="Voornaam" autocomplete="given-name" required />
             </div>
-            <input type="tel" placeholder="Telefoonnummer" aria-label="Telefoonnummer" />
-            <input type="email" placeholder="E-mailadres" aria-label="E-mailadres" />
+            <input type="tel" name="telefoon" placeholder="Telefoonnummer" aria-label="Telefoonnummer" autocomplete="tel" required />
+            <input type="email" name="email" placeholder="E-mailadres" aria-label="E-mailadres" autocomplete="email" required />
+            <div class="form-feedback" id="form-feedback" role="status" aria-live="polite"></div>
             <button type="submit" class="btn btn-primary">Naar de agenda →</button>
           </form>
         </div>
@@ -615,31 +652,123 @@
     </main>
     <script>
       (function () {
-        const GTM_ID = "GTM-XXXXXXX";
+        const form = document.getElementById("lead-form");
+        const feedback = document.getElementById("form-feedback");
+        const webhookUrl = "https://hook.eu2.make.com/olv8xp5jjts44egugt9gc9bg21thjen1";
+        if (form && feedback) {
+          const submitBtn = form.querySelector('button[type="submit"]');
+          const defaultLabel = submitBtn ? submitBtn.textContent : "";
+          const inputs = Array.from(form.querySelectorAll("input"));
+
+          const setFeedback = (message, state) => {
+            feedback.textContent = message;
+            feedback.classList.remove("is-error", "is-success", "is-info");
+            if (state) feedback.classList.add(state);
+          };
+
+          const setBusy = (busy) => {
+            if (!submitBtn) return;
+            submitBtn.disabled = busy;
+            submitBtn.textContent = busy ? "Even verzenden..." : defaultLabel;
+          };
+
+          const isValidEmail = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+
+          const validate = () => {
+            let valid = true;
+            inputs.forEach((input) => {
+              const value = input.value.trim();
+              input.classList.remove("is-invalid");
+              if (!value) {
+                input.classList.add("is-invalid");
+                valid = false;
+              }
+            });
+
+            const emailInput = form.querySelector('input[type="email"]');
+            if (emailInput) {
+              const emailValue = emailInput.value.trim();
+              if (emailValue && !isValidEmail(emailValue)) {
+                emailInput.classList.add("is-invalid");
+                valid = false;
+              }
+            }
+
+            return valid;
+          };
+
+          inputs.forEach((input) => {
+            input.addEventListener("input", () => {
+              input.classList.remove("is-invalid");
+            });
+          });
+
+          form.addEventListener("submit", async (event) => {
+            event.preventDefault();
+            if (!validate()) {
+              setFeedback("Vul alle velden correct in zodat we je kunnen contacteren.", "is-error");
+              return;
+            }
+
+            setBusy(true);
+            setFeedback("Even verzenden...", "is-info");
+
+            const payload = {};
+            inputs.forEach((input) => {
+              const key = input.name || input.getAttribute("aria-label") || "field";
+              payload[key] = input.value.trim();
+            });
+            payload.page = window.location.href;
+            payload.referrer = document.referrer || "";
+
+            try {
+              const response = await fetch(webhookUrl, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload),
+              });
+
+              if (!response.ok) {
+                throw new Error("Request failed");
+              }
+
+              setFeedback("Bedankt! We nemen snel contact op.", "is-success");
+              form.reset();
+              inputs.forEach((input) => input.classList.remove("is-invalid"));
+            } catch (error) {
+              setFeedback("Oeps, verzenden lukt even niet. Probeer opnieuw of mail ons.", "is-error");
+            } finally {
+              setBusy(false);
+            }
+          });
+        }
+      })();
+
+      (function () {
         const banner = document.getElementById("cookie-banner");
         const acceptBtn = document.getElementById("cookie-accept");
         const rejectBtn = document.getElementById("cookie-reject");
         if (!banner || !acceptBtn || !rejectBtn) return;
 
-        const loadGtm = () => {
-          if (!GTM_ID || GTM_ID === "GTM-XXXXXXX") return;
-          if (window.gtmLoaded) return;
-          window.gtmLoaded = true;
-          window.dataLayer = window.dataLayer || [];
-          const script = document.createElement("script");
-          script.async = true;
-          script.src = "https://www.googletagmanager.com/gtm.js?id=" + GTM_ID;
-          document.head.appendChild(script);
+        const updateConsent = (state) => {
+          if (typeof window.gtag !== "function") return;
+          window.gtag("consent", "update", {
+            ad_storage: state ? "granted" : "denied",
+            analytics_storage: state ? "granted" : "denied",
+            ad_user_data: state ? "granted" : "denied",
+            ad_personalization: state ? "granted" : "denied",
+          });
         };
 
         const stored = localStorage.getItem("cookie-consent");
         if (stored === "accepted") {
-          loadGtm();
+          updateConsent(true);
           banner.style.display = "none";
           return;
         }
 
         if (stored === "rejected") {
+          updateConsent(false);
           banner.style.display = "none";
           return;
         }
@@ -650,10 +779,13 @@
         };
 
         acceptBtn.addEventListener("click", () => {
-          loadGtm();
+          updateConsent(true);
           dismiss("accepted");
         });
-        rejectBtn.addEventListener("click", () => dismiss("rejected"));
+        rejectBtn.addEventListener("click", () => {
+          updateConsent(false);
+          dismiss("rejected");
+        });
       })();
     </script>
   </body>

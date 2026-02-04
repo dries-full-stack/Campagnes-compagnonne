@@ -529,6 +529,25 @@ p {
   align-items: end;
 }
 
+.form-feedback {
+  min-height: 1.4em;
+  font-size: 1rem;
+  line-height: 1.4;
+  color: var(--black);
+}
+
+.form-feedback.is-info {
+  opacity: 0.75;
+}
+
+.form-feedback.is-success {
+  color: var(--green);
+}
+
+.form-feedback.is-error {
+  color: #b00020;
+}
+
 .form-card input {
   width: 100%;
   padding: 15px;
@@ -538,6 +557,11 @@ p {
   line-height: 1;
   background: transparent;
   color: var(--black);
+}
+
+.form-card input.is-invalid {
+  border-color: var(--orange);
+  box-shadow: 0 0 0 3px rgba(245, 122, 41, 0.2);
 }
 
 .form-card input::placeholder {
@@ -556,6 +580,11 @@ p {
   padding: 15px 24px;
   font-size: 1.1875rem;
   line-height: 1.47;
+}
+
+.form-card .btn[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .split-cards,
