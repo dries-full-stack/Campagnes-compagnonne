@@ -11,13 +11,22 @@
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&family=Roboto+Slab:wght@600;700&display=swap" rel="stylesheet" />
   </head>
   <body>
+    <div class="cookie-banner" id="cookie-banner" role="region" aria-label="Cookiebanner">
+      <div class="cookie-text">
+        <p>We gebruiken cookies om je ervaring te verbeteren.</p>
+        <a class="cookie-link" href="https://www.compagnonne.be/privacybeleid">Privacybeleid</a>
+      </div>
+      <div class="cookie-actions">
+        <button class="btn btn-outline" id="cookie-reject" type="button">Weigeren</button>
+        <button class="btn btn-primary" id="cookie-accept" type="button">Accepteren</button>
+      </div>
+    </div>
     <main>
       <section class="section hero">
         <header class="site-header">
           <div class="container header-inner">
             <div class="logo">
-              compagnonne
-              <span>never alone</span>
+              <img src="assets/logo/logo.png" alt="Compagnonne" />
             </div>
             <nav class="nav-links">
               <a href="https://www.compagnonne.be/" class="nav-item active">Home</a>
@@ -589,8 +598,7 @@
         <div class="container footer-inner">
           <div class="footer-brand">
             <div class="logo">
-              compagnonne
-              <span>never alone</span>
+              <img src="assets/logo/logo.png" alt="Compagnonne" />
             </div>
             <p>Business mentoring met een team van specialisten.</p>
           </div>
@@ -605,5 +613,48 @@
         </div>
       </footer>
     </main>
+    <script>
+      (function () {
+        const GTM_ID = "GTM-XXXXXXX";
+        const banner = document.getElementById("cookie-banner");
+        const acceptBtn = document.getElementById("cookie-accept");
+        const rejectBtn = document.getElementById("cookie-reject");
+        if (!banner || !acceptBtn || !rejectBtn) return;
+
+        const loadGtm = () => {
+          if (!GTM_ID || GTM_ID === "GTM-XXXXXXX") return;
+          if (window.gtmLoaded) return;
+          window.gtmLoaded = true;
+          window.dataLayer = window.dataLayer || [];
+          const script = document.createElement("script");
+          script.async = true;
+          script.src = "https://www.googletagmanager.com/gtm.js?id=" + GTM_ID;
+          document.head.appendChild(script);
+        };
+
+        const stored = localStorage.getItem("cookie-consent");
+        if (stored === "accepted") {
+          loadGtm();
+          banner.style.display = "none";
+          return;
+        }
+
+        if (stored === "rejected") {
+          banner.style.display = "none";
+          return;
+        }
+
+        const dismiss = (value) => {
+          localStorage.setItem("cookie-consent", value);
+          banner.style.display = "none";
+        };
+
+        acceptBtn.addEventListener("click", () => {
+          loadGtm();
+          dismiss("accepted");
+        });
+        rejectBtn.addEventListener("click", () => dismiss("rejected"));
+      })();
+    </script>
   </body>
 </html>
