@@ -1376,7 +1376,7 @@ p {
 }
 
 .cta-card {
-  background: var(--cream);
+  background: var(--offwhite);
   border-radius: 20px;
   padding: 30px;
   text-align: center;
@@ -1532,6 +1532,12 @@ p {
 .faq-list summary {
   font-weight: 600;
   cursor: pointer;
+}
+
+@media (min-width: 981px) {
+  .faq-list {
+    margin-top: calc(1.76rem + 24px + clamp(2.2rem, 3.85vw, 3.3rem));
+  }
 }
 
 .footer-simple {
